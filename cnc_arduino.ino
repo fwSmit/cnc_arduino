@@ -42,13 +42,14 @@ void setup() // Deze routine wordt 1 keer gerund aan het begin van het programma
   //  stepperX.setSpeed(400);
   //  stepperY.setSpeed(400);
   //  stepperZ.setSpeed(400);
-  stepperX.setMaxSpeed(5000);
+  //stepperX.setMaxSpeed(5000);
+  stepperX.setSpeed(5000);
   stepperY.setMaxSpeed(5000);
-  stepperZ.setMaxSpeed(500);
+  stepperZ.setMaxSpeed(5000);
 
-  stepperX.setAcceleration(400);
-  stepperY.setAcceleration(400);
-  stepperZ.setAcceleration(400);
+  stepperX.setAcceleration(1000);
+  stepperY.setAcceleration(1000);
+  stepperZ.setAcceleration(1000);
 
   // Add all steppers to multistepper
   steppers.addStepper(stepperX);
@@ -59,54 +60,16 @@ void setup() // Deze routine wordt 1 keer gerund aan het begin van het programma
 
 void loop()
 {
-  const int z_rest_height = 10;
-  const int z_cut_height = -10;
-  const int n_positions = 11;
-  const int move_rest = 1001;
-  const int cut_down_rest = 100;
-  const int cut_up_rest = 0;
-  const int small_rest = 100;
-
-  // Array of delays between movement
-  long timing[n_positions - 1] = {
-    {small_rest},
-    {move_rest},
-    {cut_down_rest},
-    {cut_up_rest},
-    {move_rest},
-    {cut_down_rest},
-    {cut_up_rest},
-    {move_rest},
-    {cut_down_rest},
-    {cut_up_rest}
-  };
-
-
-  // Array of desired stepper positions
-  long positions[n_positions][3] = {
-    {0, 0, z_rest_height},
-    {150, 20, z_rest_height},
-    {150, 20, z_cut_height},
-    {150, 20, z_rest_height},
-    {150, 120, z_rest_height},
-    {150, 120, z_cut_height},
-    {150, 120, z_rest_height},
-    {50, 120, z_rest_height},
-    {50, 120, z_cut_height},
-    {50, 120, z_rest_height},
-    {0, 0, z_rest_height}
-  };
-
-
-  for (int i = 0; i < n_positions; i++) {
-    if (i >0) {delay(timing[i-1]);}
-    for (int j = 0; j < 3; j++) {
-      positions[i][j] *= 100;
-    }
-    steppers.moveTo(positions[i]);
-    steppers.runSpeedToPosition(); // Blocks until all are in position
-    
-  }
+ 
+  stepperX.move(10000);
+  stepperY.move(10000);
+  stepperZ.move(3000);
+  while(stepperX.run()||stepperY.run()||stepperZ.run()){}
+  delay(1000);
+  stepperX.move(-10000);  
+  stepperY.move(-10000);  
+  stepperZ.move(-3000);  
+  while(stepperX.run()||stepperY.run()||stepperZ.run()){}
 
   Serial.println("FINISHED");
   delay(10000);
