@@ -61,15 +61,23 @@ void setup() // Deze routine wordt 1 keer gerund aan het begin van het programma
 void loop()
 {
  
-  stepperX.move(10000);
-  stepperY.move(10000);
-  stepperZ.move(3000);
-  while(stepperX.run()||stepperY.run()||stepperZ.run()){}
-  delay(1000);
-  stepperX.move(-10000);  
-  stepperY.move(-10000);  
-  stepperZ.move(-3000);  
-  while(stepperX.run()||stepperY.run()||stepperZ.run()){}
+	stepperX.move(600 * N_MICROSTEPS);
+	stepperY.move(600 * N_MICROSTEPS);
+	stepperZ.move(180 * N_MICROSTEPS);
+	while (stepperX.isRunning() || stepperY.isRunning() || stepperZ.isRunning()) {
+		stepperX.run();
+		stepperY.run();
+		stepperZ.run();
+	}
+	delay(1000);
+	stepperX.move(-600 * N_MICROSTEPS);
+	stepperY.move(-600 * N_MICROSTEPS);
+	stepperZ.move(-180 * N_MICROSTEPS);
+	while (stepperX.isRunning() || stepperY.isRunning() || stepperZ.isRunning()) {
+		stepperX.run();
+		stepperY.run();
+		stepperZ.run();
+	}
 
   Serial.println("FINISHED");
   delay(10000);
