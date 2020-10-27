@@ -21,6 +21,7 @@ AccelStepper stepperZ(1, ZSTEP, ZDIR); // initialiseren van de stapper op poort 
 float steps_per_rotation = STEPS_FULL * N_MICROSTEPS;
 float spoed = 8.; // [mm]
 float distance_per_rotation[N_AXES] = {spoed, spoed, spoed * 16. / 24. }; // [mm]
+Vec3 speling = {0.5, 0.5, 0.5}
 int stepper_speed = 10000;
 int stepper_acceleration = 1000;
 
@@ -28,22 +29,18 @@ struct Vec3 {
   float val[N_AXES];
 };
 
-Vec3 boundary_negative = {0, 0, 0};
-Vec3 boundary_positive = {210, 148, 100};
+Vec3 boundary_negative = {0, 0, 0}; // [mm]
+Vec3 boundary_positive = {210, 148, 100}; // [mm]
 
 void setup()
 {
   pinMode(SPN_DIR, OUTPUT);
-  pinMode(ENABLEPIN, OUTPUT); // en ENABLEPIN(8) op output.
+  pinMode(ENABLEPIN, OUTPUT);
 
   Serial.begin(9600);
   Serial.println("Start Serial");
 
   digitalWrite(ENABLEPIN, LOW); // LOW= de motoren zijn actief. HIGH= de motoren
-
-  //digitalWrite(LED_BUILTIN, HIGH);
-  //delay(1000);
-  //digitalWrite(LED_BUILTIN, LOW);
 
   stepperX.setSpeed(stepper_speed);
   stepperY.setSpeed(stepper_speed);
@@ -106,14 +103,19 @@ void loop()
   const int cut_up_rest = 0;
   const int small_rest = 100;
   bool res;
-  Vec3 start_pos = {0, 0, 0};
-  Vec3 drill_down = {0, 0, z_cut_height};
-  Vec3 drill_up = {0, 0, z_rest_height};
+  Vec3 start_pos = {0, 0, z_rest_height+speling.val[2]};
+  Vec3 drill_down = {0, 0, z_cut_height+speling.val[2]};
+  Vec3 drill_up = {0, 0, z_rest_height+speling.val[2]};
   Vec3 positions[n_positions] = {
-    {150, 20, 0},
-    {150, 120, 0},
-    {50, 120, 0}
+    {150.+speling.val[0], 20.+speling.val[1], 0.},
+    {150.+speling.val[0], 120.+speling.val[1], 0.},
+    {50., 120.+speling.val[1], 0.}
   };
+  res = moveZ(start_pos);
+  if (!res) {
+    Serial.println("ABORT!!!!");
+    return;
+  }
 
   res = moveXY(start_pos);
   if (!res) {
