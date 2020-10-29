@@ -53,7 +53,7 @@ void setup()
 
   stepperX.setAcceleration(stepper_acceleration);
   stepperY.setAcceleration(stepper_acceleration);
-  stepperZ.setAcceleration(stepper_acceleration);
+  stepperZ.setAcceleration(stepper_acceleration/4);
 }
 
 Vec3 pos_to_steps(Vec3 positions) {
@@ -82,13 +82,23 @@ bool moveXY(Vec3 pos_mm) {
   }
   return true;
 }
+bool moveZ(Vec3 pos_mm) {
+  Vec3 steps = pos_to_steps(pos_mm);
+  stepperZ.moveTo(steps.val[2]);
+  while (stepperZ.isRunning()) {
+    stepperZ.run();
+  }
+  return true;
+}
+
 
 void loop()
 {
-  Vec3 pos = {0, 45, 0};
+  // Pas deze aan als je de motoren anders wilt laten bewegen.
+  Vec3 pos = {0, 0, -2};
 
   moveXY(pos);
-  
+  moveZ(pos);
 
   Serial.println("FINISHED");
   delay(10000);
